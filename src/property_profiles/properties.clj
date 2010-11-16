@@ -1,4 +1,4 @@
-(ns property-profiles.params
+(ns property-profiles.properties
   (:require [clojure.contrib.string :as string]
 	    [clojure.contrib.properties :as p])
   (:import (java.net InetAddress))
