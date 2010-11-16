@@ -1,1 +1,0 @@
-(ns property-profiles.core)

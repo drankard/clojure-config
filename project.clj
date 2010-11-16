@@ -6,5 +6,8 @@
 
   :dev-dependencies [[swank-clojure "1.2.1"]]
 
-  :property-profiles [[m14758 :type "host"]]
+  :property-profiles [
+		      {:name "m14758" :type "user" :parent "ci"}
+		      {:name "ci" :type "host"}
+		      {:name "XPN55422" :type "host"}]
   )

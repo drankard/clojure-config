@@ -3,9 +3,10 @@
   (:require [property-profiles.params :as p])
   (:use [clojure.test]))
 
-(set! *profiles* ([{:name "m14758" :type "user" :parent "ci"}		 
+(def profiles [{:name "m14758" :type "user" :parent "ci"}		 
 	    {:name "ci" :type "host"}
-	    {:name "XPN55422" :type "host"}]))
+	    {:name "XPN55422" :type "host"}])
+(binding [*profiles* (profiles)]
 
 (deftest test-host
   (let [host (. (. InetAddress getLocalHost) getHostName)
