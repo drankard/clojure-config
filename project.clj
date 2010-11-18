@@ -3,11 +3,8 @@
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
 
+  
+  :repositories {"stuartsierra-releases" "http://stuartsierra.com/maven2"}
 
-  :dev-dependencies [[swank-clojure "1.2.1"]]
-
-  :property-profiles [
-		      {:name "m14758" :type "user" :parent "ci"}
-		      {:name "ci" :type "host"}
-		      {:name "XPN55422" :type "host"}]
-  )
+  :dev-dependencies [[swank-clojure "1.2.1"]
+		     [com.stuartsierra/lazytest "1.1.2"]])
