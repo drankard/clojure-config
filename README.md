@@ -14,8 +14,8 @@ This can currently be by username or by hostname. there is an untested feature t
 <code>
 	user=> (use 'property-profiles.properties)
 	nil
-	user=> (set-profiles [{:name "default" :type "host" :value "my-hostname"}
-	       		      {:name "My Profile" :type "user" :value "foo" :parent "default"}])
+	user=> (set-profiles [	{:name "default" :type "host" :value "my-hostname"}
+	       		      	{:name "My Profile" :type "user" :value "foo" :parent "default"}])
 
 </code>
 
