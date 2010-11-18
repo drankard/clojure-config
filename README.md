@@ -10,7 +10,7 @@ The *property-profiles.properties* namespace contains a *\*profiles\** that need
 This is done by calling set-profiles with the apps setup.
 
 This can currently be by username *:type "user"* or by hostname *:type "host"*
-there is an untested feature to get the profile from the OS enviroment var (ENV) *:type "env"*.
+there is an untested feature to get the profile from the OS enviroment set the *$ENV* variable *:type "env"*.
 
 	user=>	(use 'property-profiles.properties)
 	nil
