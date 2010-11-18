@@ -32,14 +32,11 @@
 
 
 (defn get-property-files [rule]
-  (prn rule)
   (let [name (:name rule)
 	parent (:parent rule)]
-    (prn name parent)
     (let [ out
 	  (if (not (nil? name))
 	    (assoc {} :file (str name ".properties")))]
-      (prn out)
       (if (not (nil? parent))
 	(assoc out :parent-file (str parent ".properties"))
 	out))))
@@ -62,7 +59,6 @@
 
 
 (defn- load-properties [filename]
-  (prn filename)
   (if (not (nil? filename))
     (let [resource (-> (Thread/currentThread)
 		     (.getContextClassLoader)			
@@ -74,7 +70,6 @@
 			    (.getResourceAsStream filename)))))))))
 
 (defn- load-property [key files]
-  (prn key files)
   (let [file (load-properties (:file files))
 	parent (load-properties (:parent-file files))]
     (if (nil? (get file key))
@@ -96,8 +91,6 @@
   (let [key-str (string/as-str key)
 	rule (filter-by-rule)
 	files (get-property-files rule)]
-    (prn (str key-str  " " files " "  rule))
-    
     (load-property key files)))
       
 	
