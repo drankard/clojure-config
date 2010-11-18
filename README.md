@@ -17,8 +17,6 @@ This can currently be by username or by hostname. there is an untested feature t
 			      {:name "default" :type "host" :value "my-hostname"}
 			      {:name "My Profile" :type "user" :value "foo" :parent "default"}])
 
-</code>
-
 
 
 	
