@@ -11,7 +11,7 @@ classes
 *iws
 *ipr
 *#*#*
-.#
+.#*
 .project
 *.orig
 init.clj

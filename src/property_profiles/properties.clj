@@ -3,7 +3,7 @@
   (:require [clojure.contrib.string :as string]
 	    [clojure.contrib.properties :as p])
   (:import (java.net InetAddress))
-  (:import (java.io File)))
+  (:import (java.io File FileNotFoundException)))
 
 (def *profiles* {})
 
@@ -30,16 +30,19 @@
 (defn- env-match? [param]
   (and (= (:type param) "env") (= (:name param) (env))))
 
-(defn- get-property-file [rule]
-  (let [name (:name rule)]
-	(if (not (empty? name))
-	  (str name ".properties"))))
 
-
-(defn- get-parent-property-file [rule]
-  (let [parent (:parent rule)]
-    (if (not (empty? parent))
-      (str parent ".properties"))))
+(defn get-property-files [rule]
+  (prn rule)
+  (let [name (:name rule)
+	parent (:parent rule)]
+    (prn name parent)
+    (let [ out
+	  (if (not (nil? name))
+	    (assoc {} :file (str name ".properties")))]
+      (prn out)
+      (if (not (nil? parent))
+	(assoc out :parent-file (str parent ".properties"))
+	out))))
 
 
 (defn- match-params? [current]
@@ -59,31 +62,43 @@
 
 
 (defn- load-properties [filename]
-  (let [resource (-> (Thread/currentThread)
+  (prn filename)
+  (if (not (nil? filename))
+    (let [resource (-> (Thread/currentThread)
 		     (.getContextClassLoader)			
-		     (.getResourceAsStream filename))]
+		     (.getResource filename))]
     (if (not (nil? resource))      
       (into {} (doto (java.util.Properties.)
 		 (.load (-> (Thread/currentThread)
 			    (.getContextClassLoader)			
-			    (.getResourceAsStream filename))))))))
+			    (.getResourceAsStream filename)))))))))
+
+(defn- load-property [key files]
+  (prn key files)
+  (let [file (load-properties (:file files))
+	parent (load-properties (:parent-file files))]
+    (if (nil? (get file key))
+      (get parent key)
+      (get file key))))
 
 
 ;; Public functions
 
 (defn set-profiles [profiles]
-  (alter-var-root (var *profiles*)
-		  (constantly profiles)))
+    (alter-var-root (var *profiles*)
+		    (constantly profiles)))
+  
+
+
 
 
 (defn get-property [key]
   (let [key-str (string/as-str key)
 	rule (filter-by-rule)
-	property (get (load-properties (get-property-file rule)) key-str)
-	parent-file (get-parent-property-file rule)]
-    (if (and (empty? property) (not(empty? parent-file)))
-      (get (load-properties parent-file) key-str) property)))
-
+	files (get-property-files rule)]
+    (prn (str key-str  " " files " "  rule))
+    
+    (load-property key files)))
       
 	
 

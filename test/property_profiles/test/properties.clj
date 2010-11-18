@@ -6,49 +6,43 @@
 	[lazytest.describe :only (describe before after it given do-it for-any with)]))
 
 
-(p/set-profiles [{:name "m14758" :type "user" :parent "ci"}		 
-	    {:name "ci" :type "host"}
-	    {:name "XPN55422" :type "host"}])
+(defn hostname []
+  (. (. InetAddress getLocalHost) getHostName))
 
-
+(defn prepare-params-with-username []
+   (let [user (System/getProperty "user.name")]
+     (p/set-profiles [{:name "default" :type "user" :value user}])))
+	
+(defn prepare-params-with-hostname []
+  (p/set-profiles [{:name "foo" :type "host" :value (hostname)}]))
 
 
 (describe user-match?
 	 (given [user (System/getProperty "user.name")
-		 param {:name user :type "user"}]		
+		 param {:name "foo" :type "user" :value user}]		
 		(it "test if the username matches"
 		    (#'p/user-match? param))))
 
 (describe host-match?
 	  (given [host (. (. InetAddress getLocalHost) getHostName)
-		  param  {:name host :type "hosts"}]
+		  param  {:type "host" :value host}]
 		 (it "hostname should match local hostname"
 		     (= host (#'p/hostname)))
 		 (it "hostname should match given params"		     
 		     (= (#'p/host-match? param)))))
 
 (describe get-property-file
-	  (given [param {:name "foo" :type "user"}]
+	  (given [param {:name "foo" :type "user" :value "some-user"}]
 		 (it "property file should match given username"
 		     (= "foo.properties" (#'p/get-property-file param)))))
-		 
 
-(defn hostname []
-  (. (. InetAddress getLocalHost) getHostName))
-
-(defn prepare-params-with-username []
-   (let [user (System/getProperty "user.name")]
-     (p/set-profiles [{:name user :type "user"}])))
-	
-(defn prepare-params-with-hostname []
-     (p/set-profiles [{:name (hostname) :type "host"}]))
 
 
 (describe get-filter-by-rule
 	  (with [(before (prepare-params-with-username))]
 		(it "it should match with username params"
-		    (= (System/getProperty "user.name") (:name (#'p/filter-by-rule)))))
+		    (= (System/getProperty "user.name") (:value (#'p/filter-by-rule)))))
 	  (with [(before (prepare-params-with-hostname))]
 		(it "it should match with hostname params"
-		    (= (. (. InetAddress getLocalHost) getHostName)(:name (#'p/filter-by-rule))))))
+		    (= (. (. InetAddress getLocalHost) getHostName)(:value (#'p/filter-by-rule))))))
 
