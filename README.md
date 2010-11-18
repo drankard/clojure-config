@@ -9,7 +9,8 @@ A small api to load properties runtime by profiles
 The *property-profiles.properties* namespace contains a *\*profiles\** that needs to be initialized when starting the application.
 This is done by calling set-profiles with the apps setup.
 
-This can currently be by username or by hostname. there is an untested feature to get the profile from the os throug enviroment var (ENV).
+This can currently be by username *:type "user"* or by hostname *:type "host"*
+there is an untested feature to get the profile from the OS enviroment var (ENV) *:type "env"*.
 
 	user=>	(use 'property-profiles.properties)
 	nil
