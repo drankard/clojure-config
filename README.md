@@ -2,11 +2,11 @@
 
 # Clojure config
 
-A small api to load properties runtime by profiles
+A small framework to load property config runtime by profiles
 
 # Usage
 
-The *property-profiles.properties* namespace contains a global *\*profiles\** var, that needs to be initialized when starting the application.
+The *clojure-config.core* namespace contains a global *\*profiles\** var, that needs to be initialized when starting the application.
 This is done by calling set-profiles with the apps setup.
 
 This can currently be by username: :type "user" or by hostname: :type "host"
@@ -19,7 +19,7 @@ there is an untested feature to get the profile from the OS enviroment set the *
 The :parent key is mapping to another profile, and properties from that profile will be available, note that if a property is mentioned in both the matching property and the parent property, the parent i overwritten.
 
 ###example:
-	user=>	(use 'property-profiles.properties)
+	user=>	(use 'clojure-config.core)
 	nil
 	user=>	(set-profiles [
 			      {:name "test" :type "host" :value "test-hostname"}
