@@ -33,14 +33,15 @@
 
 
 (defn- get-property-files [rule]
-  (let [value (:value rule)
+  (let [name (:name rule)
 	parent (:parent rule)]
     (let [ out
-	  (if (not (nil? value))
-	    (assoc {} :file (str value ".properties")))]
+	  (if (not (nil? name))
+	    (assoc {} :file (str name ".properties")))]
       (if (not (nil? parent))
 	(assoc out :parent-file (str parent ".properties"))
 	out))))
+
 
 
 (defn- match-params? [current]
