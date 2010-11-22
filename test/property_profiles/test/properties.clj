@@ -31,11 +31,6 @@
 		 (it "hostname should match given params"		     
 		     (= (#'p/host-match? param)))))
 
-(describe get-property-file
-	  (given [param {:name "foo" :type "user" :value "some-user"}]
-		 (it "property file should match given username"
-		     (= "foo.properties" (#'p/get-property-file param)))))
-
 
 
 (describe get-filter-by-rule
@@ -45,4 +40,11 @@
 	  (with [(before (prepare-params-with-hostname))]
 		(it "it should match with hostname params"
 		    (= (. (. InetAddress getLocalHost) getHostName)(:value (#'p/filter-by-rule))))))
+
+
+(describe all-properties
+	  (with [(before (prepare-params-with-username))]		
+		(it "should get all properties for user"
+		    (= 1 1))))
+
 

@@ -1,7 +1,8 @@
 (ns property-profiles.properties
   (:use clojure.contrib.logging)
   (:require [clojure.contrib.string :as string]
-	    [clojure.contrib.properties :as p])
+	    [clojure.contrib.properties :as p]
+	    [clojure.walk :as w])
   (:import (java.net InetAddress))
   (:import (java.io File FileNotFoundException)))
 
@@ -22,21 +23,21 @@
 
 
 (defn- host-match? [param]
-  (and (= (:type param) "host") (= (:name param) (hostname))))
+  (and (= (:type param) "host") (= (:value param) (hostname))))
 
 (defn- user-match? [param]
-  (and (= (:type param) "user") (= (:name param) (username))))
+  (and (= (:type param) "user") (= (:value param) (username))))
 
 (defn- env-match? [param]
-  (and (= (:type param) "env") (= (:name param) (env))))
+  (and (= (:type param) "env") (= (:value param) (env))))
 
 
 (defn get-property-files [rule]
-  (let [name (:name rule)
+  (let [value (:value rule)
 	parent (:parent rule)]
     (let [ out
-	  (if (not (nil? name))
-	    (assoc {} :file (str name ".properties")))]
+	  (if (not (nil? value))
+	    (assoc {} :file (str value ".properties")))]
       (if (not (nil? parent))
 	(assoc out :parent-file (str parent ".properties"))
 	out))))
@@ -79,13 +80,19 @@
 
 ;; Public functions
 
+
+
 (defn set-profiles [profiles]
     (alter-var-root (var *profiles*)
 		    (constantly profiles)))
   
+(defn my-profile []
+  (filter-by-rule))
 
-
-
+(defn all-properties []
+  (let [rule (filter-by-rule)
+	files (get-property-files rule)]
+    (w/keywordize-keys (merge (load-properties (:parent-file files)) (load-properties (:file files))))))
 
 (defn get-property [key]
   (let [key-str (string/as-str key)
