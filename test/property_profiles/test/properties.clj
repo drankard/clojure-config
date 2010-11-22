@@ -1,50 +1,57 @@
 (ns property-profiles.test.properties
   (:import (java.net InetAddress))
   (:require [property-profiles.properties :as p])
-  (:use [clojure.test]
+  (:use [lazytest.context.stub]
 	[lazytest.context.stateful :only (stateful-fn-context)]
 	[lazytest.describe :only (describe before after it given do-it for-any with)]))
 
 
-(defn hostname []
-  (. (. InetAddress getLocalHost) getHostName))
-
 (defn prepare-params-with-username []
-   (let [user (System/getProperty "user.name")]
-     (p/set-profiles [{:name "default" :type "user" :value user}])))
-	
+  (p/set-profiles [{:name "default" :type "user" :value "foo"}]))
+
 (defn prepare-params-with-hostname []
-  (p/set-profiles [{:name "foo" :type "host" :value (hostname)}]))
+  (p/set-profiles [{:name "foo" :type "host" :value "foo-host"}]))
 
 
-(describe user-match?
-	 (given [user (System/getProperty "user.name")
-		 param {:name "foo" :type "user" :value user}]		
-		(it "test if the username matches"
-		    (#'p/user-match? param))))
+(def properties-stub (stub #'p/load-properties (constantly {"ex-url" "http://example.org"})))
 
-(describe host-match?
-	  (given [host (. (. InetAddress getLocalHost) getHostName)
-		  param  {:type "host" :value host}]
-		 (it "hostname should match local hostname"
-		     (= host (#'p/hostname)))
-		 (it "hostname should match given params"		     
-		     (= (#'p/host-match? param)))))
+(def username-stub (stub #'p/username (constantly "foo")))
+(def hostname-stub (stub #'p/hostname (constantly "foo-host")))
 
 
 
-(describe get-filter-by-rule
-	  (with [(before (prepare-params-with-username))]
+
+(describe p/user-match?
+	  (with [username-stub (before (prepare-params-with-username))]
+		(given [param {:name "default" :type "user" :value "foo"}]		
+		       (it "test if the username matches"
+			   (#'p/user-match? param)))))
+
+
+(describe p/host-match?
+	  (with [hostname-stub (before (prepare-params-with-hostname))]
+		(given [host "foo-host"
+			param  {:type "host" :value host}]
+		       (it "hostname should match local hostname"
+			   (= host (#'p/hostname)))
+		       (it "hostname should match given params"		     
+			   (= (#'p/host-match? param))))))
+
+(describe p/filter-by-rule
+	  (with [username-stub (before (prepare-params-with-username))]
 		(it "it should match with username params"
-		    (= (System/getProperty "user.name") (:value (#'p/filter-by-rule)))))
-	  (with [(before (prepare-params-with-hostname))]
+		    (= "foo" (:value (#'p/filter-by-rule)))))	  
+	  (with [hostname-stub (before (prepare-params-with-hostname))]
 		(it "it should match with hostname params"
-		    (= (. (. InetAddress getLocalHost) getHostName)(:value (#'p/filter-by-rule))))))
+		    (= "foo-host" (:value (#'p/filter-by-rule))))))
 
 
-(describe all-properties
-	  (with [(before (prepare-params-with-username))]		
-		(it "should get all properties for user"
-		    (= 1 1))))
+(describe p/my-profile
+	  (with [username-stub (before (prepare-params-with-username))]
+		(it "it should find a matching profile"
+		    (= (p/my-profile) (first (prepare-params-with-username))))))
 
-
+(describe p/all-properties
+	  (with [properties-stub]
+		(it "it should get all properties from profile"
+		    (= (:ex-url (p/all-properties)) "http://example.org"))))

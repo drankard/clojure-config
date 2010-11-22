@@ -7,4 +7,6 @@
   :repositories {"stuartsierra-releases" "http://stuartsierra.com/maven2"}
 
   :dev-dependencies [[swank-clojure "1.2.1"]
-		     [com.stuartsierra/lazytest "1.1.2"]])
+		     [com.stuartsierra/lazytest "1.1.2"]
+		     [lein-lazytest "1.0.1"]]
+  :lazytest-path ["src" "test"])

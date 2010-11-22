@@ -32,7 +32,7 @@
   (and (= (:type param) "env") (= (:value param) (env))))
 
 
-(defn get-property-files [rule]
+(defn- get-property-files [rule]
   (let [value (:value rule)
 	parent (:parent rule)]
     (let [ out
@@ -93,6 +93,8 @@
   (let [rule (filter-by-rule)
 	files (get-property-files rule)]
     (w/keywordize-keys (merge (load-properties (:parent-file files)) (load-properties (:file files))))))
+
+
 
 (defn get-property [key]
   (let [key-str (string/as-str key)
