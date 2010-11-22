@@ -1,4 +1,4 @@
-(ns property-profiles.properties
+(ns clojure-config.core
   (:use clojure.contrib.logging)
   (:require [clojure.contrib.string :as string]
 	    [clojure.contrib.properties :as p]
