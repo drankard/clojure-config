@@ -2,8 +2,7 @@
   (:use clojure.contrib.logging)
   (:require [clojure.contrib.string :as string]
 	    [clojure.contrib.properties :as p]
-	    [clojure.walk :as w]
-	    [clojure.contrib.pprint :as pr])
+	    [clojure.walk :as w])
   (:import (java.net InetAddress))
   (:import (java.io File FileNotFoundException)))
 
@@ -42,6 +41,7 @@
       (if (not (nil? parent))
 	(assoc out :parent-file (str parent ".properties"))
 	out))))
+
 
 
 (defn- match-params? [current]
