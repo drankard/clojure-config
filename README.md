@@ -28,5 +28,7 @@ The :parent key is mapping to another profile, and properties from that profile 
 			      {:name "My Dev Profile" :type "user" :value "foo" :parent "test"}])
 
 
+### new feature:
+it is now possible to add properties directly in the profile, kust use the :properties keyword and add a map containing the properties needed
 
 	
