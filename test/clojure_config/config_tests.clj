@@ -29,22 +29,20 @@
 
 
 
-
-
-(describe "load-profile"
+(describe c/load-profile
   (with [hostname-stub
 	 properties-stub
 	 (before (prepare-params-with-properties))
 	 (after (cleanup))]      
     (it "it should load the correct profile"
-      (let [profile (c/load-profile)]
+      (let [profile (#'c/load-profile)]
 	(and
 	 (= (:foo-prop profile) "bar")
 	 (= (:ex-url profile) "http://example.org"))))))
 
-  
 
-(describe "c/user-match?"
+
+(describe c/user-match?
   (with [username-stub
 	 (before (prepare-params-with-username))
 	 (after (cleanup))]
@@ -74,6 +72,38 @@
 	 (after (cleanup))]
     (it "it should match with hostname params"
       (= "foo-host" (:value (#'c/determin-profile))))))
+
+
+;; Public tests
+  
+(describe c/set-profiles
+  (with [(before (prepare-params-with-username))]
+    (it "profile should be set and accessable"
+      (= c/*profiles* [{:name "default" :type "user" :value "foo"}]))))
+
+
+(describe c/properties
+  (with [hostname-stub
+	 properties-stub
+	 (before (prepare-params-with-properties))
+	 (after (cleanup))]
+    (it "is should load all properties"
+      (let [properties (c/properties)]
+	(= (:ex-url properties) "http://example.org")
+	(= (:foo-prop properties) "bar")
+	(= (:hello-prop properties ) "hello")))))
+
+
+(describe c/property
+  (with [hostname-stub
+	 properties-stub
+	 (before (prepare-params-with-properties))
+	 (after (cleanup))]
+    (it "it should load all properties one at the time"
+      (= (c/property :ex-url) "http://example.org")
+      (= (c/property :foo-prop) "bar")
+      (= (c/property :hello-prop) "hello"))))
+
 
 
 (describe c/my-profile

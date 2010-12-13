@@ -108,14 +108,8 @@
 (defn my-profile []
   (determin-profile))
 
-(defn all-properties []
-  (let [rule (determin-profile)
-	files (get-property-files rule)]
-    (merge (load-from-file (:parent-file files)) (load-from-file (:file files)))))
+(defn properties []
+  (load-profile))
 
-
-(defn get-property [key]
-  (let [key-str (string/as-str key)
-	rule (determin-profile)
-	files (get-property-files rule)]
-    (load-property key files)))
+(defn property [key]
+  ((keyword key)(load-profile)))
