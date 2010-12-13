@@ -29,6 +29,7 @@ The :parent key is mapping to another profile, and properties from that profile 
 
 
 ### new feature:
-it is now possible to add properties directly in the profile, kust use the :properties keyword and add a map containing the properties needed
+it is now possible to add properties directly in the profile, just use :properties keyword and add a map containing the properties needed
+    (set-profiles [{:name "test" :type "host" :value "test-hostname" :properties {:foo "bar"}}])
 
 	
