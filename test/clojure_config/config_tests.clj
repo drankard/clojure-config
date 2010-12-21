@@ -97,7 +97,6 @@
 	 (after (cleanup))]
     (it "is should load all properties"
       (let [properties (c/properties)]
-	(prn properties)
 	(and 
 	 (= (:ex-url properties) "http://example.org")
 	 (= (:foo-prop properties) "bar")
