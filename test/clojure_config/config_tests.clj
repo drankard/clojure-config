@@ -14,9 +14,16 @@
 
 
 (defn prepare-params-with-properties []
-  (c/set-profiles [{:name "foo" :type "host" :value "foo-host"
+  (c/set-profiles [{:name "foo"
+		    :type "host"
+		    :value "foo-host"
 		    :properties {:foo-prop "bar"
-				 :hello-prop "hello"}}]))
+				 :hello-prop "hello"}}
+		   {:name "child"
+		    :type "host"
+		    :value "child-host"
+		    :parent "foo"
+		    :properties {:child-prop "hello child"}}]))
 
 (defn cleanup []
     (c/set-profiles nil))
@@ -24,13 +31,13 @@
 
 (def properties-stub (stub #'c/load-from-file (constantly {:ex-url "http://example.org"})))
 
-(def username-stub (stub #'c/username (constantly "foo")))
-(def hostname-stub (stub #'c/hostname (constantly "foo-host")))
-
+(def foo-user-stub (stub #'c/username (constantly "foo")))
+(def foo-host-stub (stub #'c/hostname (constantly "foo-host")))
+(def child-host-stub (stub #'c/hostname (constantly "child-host")))
 
 
 (describe c/load-profile
-  (with [hostname-stub
+  (with [foo-host-stub
 	 properties-stub
 	 (before (prepare-params-with-properties))
 	 (after (cleanup))]      
@@ -43,7 +50,7 @@
 
 
 (describe c/user-match?
-  (with [username-stub
+  (with [foo-user-stub
 	 (before (prepare-params-with-username))
 	 (after (cleanup))]
     (given [param {:name "default" :type "user" :value "foo"}]		
@@ -52,7 +59,7 @@
 
 
 (describe c/host-match?
-  (with [hostname-stub
+  (with [foo-host-stub
 	 (before (prepare-params-with-hostname))
 	 (after (cleanup))]
     (given [host "foo-host" param  {:type "host" :value host}]
@@ -62,12 +69,12 @@
 	(= (#'c/host-match? param))))))
 
 (describe c/filter-by-profile
-  (with [username-stub
+  (with [foo-user-stub
 	 (before (prepare-params-with-username))
 	 (after (cleanup))]
     (it "it should match with username params"
       (= "foo" (:value (#'c/determin-profile)))))	  
-  (with [hostname-stub
+  (with [foo-host-stub
 	 (before (prepare-params-with-hostname))
 	 (after (cleanup))]
     (it "it should match with hostname params"
@@ -77,37 +84,48 @@
 ;; Public tests
   
 (describe c/set-profiles
-  (with [(before (prepare-params-with-username))]
+  (with [(before (prepare-params-with-username))
+	 (after (cleanup))]
     (it "profile should be set and accessable"
       (= c/*profiles* [{:name "default" :type "user" :value "foo"}]))))
 
 
 (describe c/properties
-  (with [hostname-stub
+  (with [foo-host-stub
 	 properties-stub
 	 (before (prepare-params-with-properties))
 	 (after (cleanup))]
     (it "is should load all properties"
       (let [properties (c/properties)]
-	(= (:ex-url properties) "http://example.org")
-	(= (:foo-prop properties) "bar")
-	(= (:hello-prop properties ) "hello")))))
-
+	(prn properties)
+	(and 
+	 (= (:ex-url properties) "http://example.org")
+	 (= (:foo-prop properties) "bar")
+	 (= (:hello-prop properties ) "hello"))))))
+  
 
 (describe c/property
-  (with [hostname-stub
+  (with [child-host-stub
 	 properties-stub
 	 (before (prepare-params-with-properties))
 	 (after (cleanup))]
+    (it "profile should be child"
+      (= (:name (c/my-profile) "child")))
     (it "it should load all properties one at the time"
-      (= (c/property :ex-url) "http://example.org")
-      (= (c/property :foo-prop) "bar")
-      (= (c/property :hello-prop) "hello"))))
+      (and
+       (= (c/property :ex-url) "http://example.org")
+       (= (c/property :child-prop) "hello child")))
+    (it "it should also load properties from parent"
+       (= (c/property :foo-prop) "bar"))))
+ ;      (= (c/property :hello-prop) "hello")
+  ;     
+  
+
 
 
 
 (describe c/my-profile
-  (with [username-stub
+  (with [foo-user-stub
 	 (before (prepare-params-with-username))
 	 (after (cleanup))]
     (it "it should find a matching profile"

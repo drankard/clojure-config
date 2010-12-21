@@ -81,16 +81,19 @@
 
 (defn load-profile []
   (let [profile (determin-profile)
-	files (get-property-files profile)]    
-    (conj (:properties profile)
-	  (load-from-file (:parent-file files))
-	  (load-from-file (:file files)))))
+	parent (first (filter (fn [x] (= (:name x) (:parent profile))) *profiles*))
+	files (get-property-files profile)]
+    (merge
+     (:properties parent)
+     (:properties profile)
+     (load-from-file (:parent-file files))
+     (load-from-file (:file files)))))
 
 
 
 (defn- load-property [key files]
   (let [file (load-from-file (:file files))
-	parent (load-from-file (:parent-file files))]    
+	parent (load-from-file (:parent-file files))]
     (if (nil? (get file key))
       (get parent key)
       (get file key))))
@@ -112,4 +115,5 @@
   (load-profile))
 
 (defn property [key]
-  ((keyword key)(load-profile)))
+  (do
+    ((keyword key)(load-profile))))

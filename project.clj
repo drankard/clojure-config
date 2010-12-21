@@ -1,4 +1,4 @@
-(defproject clojure-config "1.0.0-SNAPSHOT"
+(defproject clojure-config "1.0.1-SNAPSHOT"
   :description "A simple clojure framework for loading property configurations runtime"
 
   :dependencies [[org.clojure/clojure "1.2.0"]
