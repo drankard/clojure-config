@@ -6,7 +6,7 @@
   (:import (java.net InetAddress))
   (:import (java.io File FileNotFoundException)))
 
-(def *profiles* {})
+(def *properties* {})
 
 		  
 
@@ -51,20 +51,10 @@
 
 
 
-(defn determin-profile []
-  (first (filter (fn [p] (match-params? p)) *profiles*)))
+(defn determin-profile [profiles]
+  (first (filter (fn [p] (match-params? p)) profiles)))
 
   
-(defn- determin-profile-1  []
-  (loop [the-rest *profiles*]
-    (let [current (first the-rest)]
-      (prn current)
-      (if (or (empty? the-rest) (match-params? current))
-	current
-	(recur (rest the-rest))))))
-
-
-
 
 (defn- load-from-file [filename]  
   (w/keywordize-keys (if (not (nil? filename))
@@ -79,9 +69,9 @@
 
 
 
-(defn load-profile []
+(defn load-profile [profiles]
   (let [profile (determin-profile)
-	parent (first (filter (fn [x] (= (:name x) (:parent profile))) *profiles*))
+	parent (first (filter (fn [x] (= (:name x) (:parent profile))) profiles))
 	files (get-property-files profile)]
     (merge
      (:properties parent)
@@ -104,16 +94,16 @@
 
 
 
-(defn set-profiles [profiles]
-    (alter-var-root (var *profiles*)
-		    (constantly profiles)))
+(defn set-properties [profiles]
+    (alter-var-root (var *properties*)
+		    (load-profile profiles)))
   
 (defn my-profile []
   (determin-profile))
 
 (defn properties []
-  (load-profile))
+  *properties*)
 
 (defn property [key]
   (do
-    ((keyword key)(load-profile))))
+    ((keyword key) *properties*)))
