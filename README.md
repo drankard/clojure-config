@@ -21,7 +21,7 @@ The :parent key is mapping to another profile, and properties from that profile 
 ###example:
 	user=>	(use 'clojure-config.core)
 	nil
-	user=>	(set-profiles [
+	user=>	(set-properties [
 			      {:name "test" :type "host" :value "test-hostname"}
 			      {:name "production" :type "host" :value "prod-hostname"}
 			      {:name "ci" :type "host" :value "ci-hostname"}
@@ -30,7 +30,9 @@ The :parent key is mapping to another profile, and properties from that profile 
 
 ### new feature:
 It is now possible to add properties directly in the profile, just use :properties keyword and add a map containing the properties needed
-    (set-profiles [{:name "test" :type "host" :value "test-hostname" :properties {:foo "bar"}}])
+    (set-properties [{:name "test" :type "host" :value "test-hostname" :properties {:foo "bar"}}])
 if there is a mathing property file it will still be loaded and merged.
 
+(property "key") ; returns the value or nil
+(properties)     ; returns all properties in a map
 	

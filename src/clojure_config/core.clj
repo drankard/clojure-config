@@ -75,7 +75,6 @@
                    (:properties profile)
                    (load-from-file (:parent-file files))
                    (load-from-file (:file files)))]
-      (prn (str "prop:" properties))
       properties)))
 
 
