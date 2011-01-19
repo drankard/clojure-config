@@ -49,13 +49,6 @@
       (host-match? current)
       (env-match? current)))
 
-
-
-(defn determin-profile [profiles]
-  (first (filter (fn [p] (match-params? p)) profiles)))
-
-  
-
 (defn- load-from-file [filename]  
   (w/keywordize-keys (if (not (nil? filename))
     (let [resource (-> (Thread/currentThread)
@@ -68,16 +61,22 @@
 			    (.getResourceAsStream filename))))))))))
 
 
+(defn-  determin-profile [profiles]
+  (first (filter (fn [p] (match-params? p)) profiles)))
+
 
 (defn load-profile [profiles]
-  (let [profile (determin-profile)
+  (if (not (nil? profiles))
+     (let [profile (determin-profile profiles)
 	parent (first (filter (fn [x] (= (:name x) (:parent profile))) profiles))
-	files (get-property-files profile)]
-    (merge
-     (:properties parent)
-     (:properties profile)
-     (load-from-file (:parent-file files))
-     (load-from-file (:file files)))))
+	files (get-property-files profile)
+        properties (merge
+                   (:properties parent)
+                   (:properties profile)
+                   (load-from-file (:parent-file files))
+                   (load-from-file (:file files)))]
+      (prn (str "prop:" properties))
+      properties)))
 
 
 
@@ -89,21 +88,15 @@
       (get file key))))
 
 
-
 ;; Public functions
 
-
-
-(defn set-properties [profiles]
+(defn set-properties "Set the profile and loads the properties and binds *properties*" [profiles]
     (alter-var-root (var *properties*)
-		    (load-profile profiles)))
-  
-(defn my-profile []
-  (determin-profile))
+		    (constantly (load-profile profiles))))
 
-(defn properties []
+(defn properties "Returns a map with all properties" []
   *properties*)
 
-(defn property [key]
+(defn property "Returns the value with the given key, or null" [key]
   (do
     ((keyword key) *properties*)))

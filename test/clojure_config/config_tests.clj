@@ -35,29 +35,6 @@
 (def foo-host-stub (stub #'c/hostname (constantly "foo-host")))
 (def child-host-stub (stub #'c/hostname (constantly "child-host")))
 
-
-(describe c/load-profile
-  (with [foo-host-stub
-	 properties-stub
-	 (before (prepare-params-with-properties))
-	 (after (cleanup))]      
-    (it "it should load the correct profile"
-      (let [profile (#'c/load-profile)]
-	(and
-	 (= (:foo-prop profile) "bar")
-	 (= (:ex-url profile) "http://example.org"))))))
-
-
-
-(describe c/user-match?
-  (with [foo-user-stub
-	 (before (prepare-params-with-username))
-	 (after (cleanup))]
-    (given [param {:name "default" :type "user" :value "foo"}]		
-      (it "test if the username matches"
-	(#'c/user-match? param)))))
-
-
 (describe c/host-match?
   (with [foo-host-stub
 	 (before (prepare-params-with-hostname))
@@ -67,28 +44,6 @@
 	(= host (#'c/hostname)))
       (it "hostname should match given params"		     
 	(= (#'c/host-match? param))))))
-
-(describe c/filter-by-profile
-  (with [foo-user-stub
-	 (before (prepare-params-with-username))
-	 (after (cleanup))]
-    (it "it should match with username params"
-      (= "foo" (:value (#'c/determin-profile)))))	  
-  (with [foo-host-stub
-	 (before (prepare-params-with-hostname))
-	 (after (cleanup))]
-    (it "it should match with hostname params"
-      (= "foo-host" (:value (#'c/determin-profile))))))
-
-
-;; Public tests
-;  
-;(describe c/set-properties
-;  (with [(before (prepare-params-with-username))
-;	 (after (cleanup))]
-;    (it "profile should be set and accessable"
-;:      (= c/*profiles* [{:name "default" :type "user" :value "foo"}]))))
-
 
 (describe c/properties
   (with [foo-host-stub
@@ -108,24 +63,10 @@
 	 properties-stub
 	 (before (prepare-params-with-properties))
 	 (after (cleanup))]
-    (it "profile should be child"
-      (= (:name (c/my-profile) "child")))
     (it "it should load all properties one at the time"
       (and
        (= (c/property :ex-url) "http://example.org")
        (= (c/property :child-prop) "hello child")))
     (it "it should also load properties from parent"
        (= (c/property :foo-prop) "bar"))))
- ;      (= (c/property :hello-prop) "hello")
-  ;     
   
-
-
-
-
-(describe c/my-profile
-  (with [foo-user-stub
-	 (before (prepare-params-with-username))
-	 (after (cleanup))]
-    (it "it should find a matching profile"
-      (= (c/my-profile) (first (prepare-params-with-username))))))
