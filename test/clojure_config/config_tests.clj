@@ -14,7 +14,9 @@
 
 
 (defn prepare-params-with-properties []
-  (c/set-properties [{:name "foo"
+  (c/set-properties [
+		     {:name "global" :properties {:global-string "global"}}
+		     {:name "foo"
 		    :type "host"
 		    :value "foo-host"
 		    :properties {:foo-prop "bar"
@@ -66,7 +68,8 @@
     (it "it should load all properties one at the time"
       (and
        (= (c/property :ex-url) "http://example.org")
-       (= (c/property :child-prop) "hello child")))
+       (= (c/property :child-prop) "hello child")
+       (= (c/property :global-string) "global")))
     (it "it should also load properties from parent"
-       (= (c/property :foo-prop) "bar"))))
+      (= (c/property :foo-prop) "bar"))))
   

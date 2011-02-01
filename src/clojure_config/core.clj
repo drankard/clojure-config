@@ -40,8 +40,7 @@
 	    (assoc {} :file (str value ".properties")))]
       (if (not (nil? parent))
 	(assoc out :parent-file (str parent ".properties"))
-	out))))
-
+	(assoc out :global "global.properties")))))
 
 
 (defn- match-params? [current]
@@ -67,14 +66,17 @@
 
 (defn load-profile [profiles]
   (if (not (nil? profiles))
-     (let [profile (determin-profile profiles)
-	parent (first (filter (fn [x] (= (:name x) (:parent profile))) profiles))
-	files (get-property-files profile)
-        properties (merge
-                   (:properties parent)
-                   (:properties profile)
-                   (load-from-file (:parent-file files))
-                   (load-from-file (:file files)))]
+    (let [profile (determin-profile profiles)
+	  global (first (filter (fn [x] (= (:name x) "global")) profiles)) 
+	  parent (first (filter (fn [x] (= (:name x) (:parent profile))) profiles))
+	  files (get-property-files profile)
+	  properties (merge
+		      (:properties global)
+		      (:properties parent)
+		      (:properties profile)
+		      (load-from-file (:global files))		      
+		      (load-from-file (:parent-file files))
+		      (load-from-file (:file files)))]
       properties)))
 
 
