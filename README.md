@@ -18,10 +18,14 @@ there is an untested feature to get the profile from the OS enviroment set the *
 
 The :parent key is mapping to another profile, and properties from that profile will be available, note that if a property is mentioned in both the matching property and the parent property, the parent i overwritten.
 
+globals:
+if you add a profile called _global_ and add a property file or add a property map to it theese properties will be loaded in all profiles
+
 ###example:
 	user=>	(use 'clojure-config.core)
 	nil
 	user=>	(set-properties [
+			      {:name "global" :properties {:a_global "im acceable from all profiles"}}
 			      {:name "test" :type "host" :value "test-hostname"}
 			      {:name "production" :type "host" :value "prod-hostname"}
 			      {:name "ci" :type "host" :value "ci-hostname"}
@@ -35,4 +39,4 @@ if there is a mathing property file it will still be loaded and merged.
 
 (property "key") ; returns the value or nil
 (properties)     ; returns all properties in a map
-	
+global properties added
